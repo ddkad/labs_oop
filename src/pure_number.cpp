@@ -4,27 +4,6 @@
 
 using namespace std;
 
-bool is_pure_number(long long number) {
-  if (number < 0) {
-    return false;
-  }
-
-  if (number == 0) {
-    return true;
-  }
-
-  int max_dig = 9;
-  while (number > 0) {
-    int current_dig = number % 10;
-    if (current_dig > max_dig) {
-      return false;
-    }
-    max_dig = current_dig;
-    number = number / 10;
-  }
-  return true;
-}
-
 bool is_pure_number(const std::string& number_to_str) {
     if (number_to_str.empty()) {
         return false;
