@@ -4,33 +4,54 @@
 #include <exception>
 #include <iostream>
 #include <string>
-#include <vector>
+
+class Vector {
+private:
+    size_t cnt_elem;
+    size_t memory_size;
+    unsigned char *v;
+    void resize(size_t sz);
+
+public:
+    void push(unsigned char);
+    void pop();
+    void clear();
+
+    unsigned char get(size_t) const;
+    void set(size_t, unsigned char);
+
+    void swap(size_t, size_t);
+
+    size_t len() const;
+
+    Vector(Vector&&) noexcept;
+    Vector(const Vector &);
+    Vector();
+    ~Vector();
+};
 
 class Twelve {
 private:
-  std::vector<unsigned char> nums;
-  size_t size;
+  Vector nums;
 
   bool isValidDigit(unsigned char c) const;
   unsigned char charToDigit(char c) const;
   char digitToChar(unsigned char d) const;
   void removeLeadingZeros();
   int compare(const Twelve &other) const;
-  void reverseVector(std::vector<unsigned char> &vector);
 
 public:
   Twelve();
   explicit Twelve(const size_t &n, unsigned char t = 0);
-  Twelve(const std::initializer_list<unsigned char> &t);
   explicit Twelve(const std::string &t);
-  Twelve(const Twelve &other) = default;
+  Twelve(unsigned long long value);
+  Twelve(const Twelve &other);
   Twelve(Twelve &&other) noexcept;
   virtual ~Twelve() noexcept;
 
   size_t getSize() const;
   std::string toString() const;
-  const std::vector<unsigned char> &getNums() const;
-
+  
   Twelve sum(const Twelve &other) const;
   Twelve subtract(const Twelve &other) const;
   Twelve copy() const;
@@ -38,9 +59,6 @@ public:
   bool equals(const Twelve &other) const;
   bool lessThan(const Twelve &other) const;
   bool greaterThan(const Twelve &other) const;
-
-  Twelve sumAssign(const Twelve &other);
-  Twelve subtractAssign(const Twelve &other);
 
   void print() const;
 };

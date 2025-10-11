@@ -17,10 +17,6 @@ TEST(TwelveTest, StringConstructorInvalid) {
   EXPECT_THROW(Twelve num("3R3"), std::exception);
 }
 
-TEST(TwelveTest, InitializerListConstructor) {
-  Twelve num({'1', 'A', '0'});
-  EXPECT_EQ(num.toString(), "1A0");
-}
 
 TEST(TwelveTest, SizeValueConstructor) {
   Twelve num(3, 10);
@@ -69,15 +65,8 @@ TEST(TwelveTest, ComparisonOperations) {
   EXPECT_FALSE(num1.equals(num2));
 }
 
-TEST(TwelveTest, SumAssignOperation) {
-  Twelve num1("1A");
-  Twelve num2("B");
-  Twelve result = num1.sumAssign(num2);
-  EXPECT_EQ(result.toString(), "29");
-}
-
 TEST(TwelveTest, RemoveLeadingZeros) {
-  Twelve num({'0', '0', '1', 'A'});
+  Twelve num("001A");  
   EXPECT_EQ(num.toString(), "1A");
   EXPECT_EQ(num.getSize(), 2);
 }
