@@ -30,25 +30,6 @@ Array<T>::Array(Array&& other) noexcept
 template<class T>
 Array<T>::~Array() = default;
 
-// template<class T>
-// Array<T>::Array(const Array& other) : current_size(other.current_size), current_capacity(other.current_capacity), elements(std::make_shared<T[]>(current_capacity)) {
-//     for (size_t i = 0; i < current_size; ++i) {
-//         elements[i] = T(other.elements[i]);
-//     }
-// }
-
-// template<class T>
-// Array<T>& Array<T>::operator=(const Array& other) {
-//     if (this != &other) {
-//         current_size = other.current_size;
-//         current_capacity = other.current_capacity;
-//         elements = std::make_shared<T[]>(current_capacity);
-//         for (size_t i = 0; i < current_size; ++i) {
-//             elements[i] = T(other.elements[i]);
-//         }
-//     }
-//     return *this;
-// }
 
 template<class T>
 Array<T>& Array<T>::operator=(Array&& other) noexcept {
