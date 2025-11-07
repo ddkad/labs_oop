@@ -17,11 +17,11 @@ set(HEADERS
     include/octagon.h
 )
 
-# ОСНОВНАЯ ПРОГРАММА
+
 add_executable(lab_4 ${SOURCES} ${HEADERS})
 target_include_directories(lab_4 PRIVATE include src)
 
-# ТЕСТЫ ВСЕГДА ВКЛЮЧЕНЫ (убрали условие)
+
 include(FetchContent)
 FetchContent_Declare(
     googletest
