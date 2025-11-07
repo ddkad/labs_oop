@@ -15,7 +15,6 @@ public:
     Array(size_t);
     Array(size_t, const T&);
     Array(const std::initializer_list<T>&);
-    // Array(const Array&);
     Array(Array&&) noexcept;
     ~Array();
 
@@ -30,7 +29,6 @@ public:
     size_t capacity() const;
     T& operator[](size_t);
     const T& operator[](size_t) const;
-    // Array& operator=(const Array&);
     Array& operator=(Array&&) noexcept;
 };
 
