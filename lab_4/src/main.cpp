@@ -14,13 +14,6 @@ int main() {
     figure_ptr_array.push(triangle);
     std::cout << "Array<std::shared_ptr<Figure<int>>> size: " << figure_ptr_array.size() << std::endl;
 
-    // Array<Triangle<double>> triangle_array;
-    // Triangle<double> t1, t2;
-    // triangle_array.push(t1);
-    // triangle_array.push(t2);
-    // std::cout << "Array<Triangle<double>> size: " << triangle_array.size() << std::endl;
-    
-    
     std::cout << "Enter number of figures: ";
     int n;
     std::cin >> n;
