@@ -10,6 +10,10 @@ class Array {
     size_t current_capacity = 0;
     std::shared_ptr<T[]> elements;
 
+    inline static auto array_deleter = [](T* ptr) {
+        delete[] ptr;
+    };
+
 public:
     Array();
     Array(size_t);
