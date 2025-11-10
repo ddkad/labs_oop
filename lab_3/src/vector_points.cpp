@@ -44,7 +44,6 @@ void VectorPoints::pop() {
 }
 
 void VectorPoints::set(size_t i, Point p) { v[i] = p; }
-Point VectorPoints::get(size_t i) const { return v[i]; }
 size_t VectorPoints::len() const { return size; }
 
 void VectorPoints::clear() {
@@ -52,4 +51,12 @@ void VectorPoints::clear() {
   capacity = 1;
   delete[] v;
   v = new Point[capacity];
+}
+
+Point& VectorPoints::operator[](size_t index) {
+    return v[index];
+}
+
+const Point& VectorPoints::operator[](size_t index) const {
+    return v[index];
 }
