@@ -1,30 +1,28 @@
 template<class T>
-Array<T>::Array() : current_size(0), current_capacity(1), elements(std::make_shared<T[]>(current_capacity)) {}
+Array<T>::Array() : current_size(0), current_capacity(1), elements(new T[current_capacity], array_deleter) {}
 
 template<class T>
-Array<T>::Array(size_t n) : current_size(n), current_capacity(n > 0 ? 2 * n : 1), elements(std::make_shared<T[]>(current_capacity)) {}
+Array<T>::Array(size_t n) : current_size(n), current_capacity(n > 0 ? 2 * n : 1), elements(new T[current_capacity], array_deleter) {}
 
 template<class T>
-Array<T>::Array(size_t n, const T& elem) : current_size(n), current_capacity(n > 0 ? 2 * n : 1), elements(std::make_shared<T[]>(current_capacity)) {
+Array<T>::Array(size_t n, const T& elem) : current_size(n), current_capacity(n > 0 ? 2 * n : 1), elements(new T[current_capacity], array_deleter) {
     for (size_t i = 0; i < current_size; ++i) {
         elements[i] = elem;
     }
 }
 
 template<class T>
-Array<T>::Array(const std::initializer_list<T>& lst) : current_size(0), current_capacity(1), elements(std::make_shared<T[]>(current_capacity)) {
+Array<T>::Array(const std::initializer_list<T>& lst) : current_size(0), current_capacity(1), elements(new T[current_capacity], array_deleter) {
     for (const T& elem : lst) { 
         push(elem); 
     }
 }
 
 template<class T>
-Array<T>::Array(Array&& other) noexcept 
-    : current_size(other.current_size), current_capacity(other.current_capacity), 
-      elements(std::move(other.elements)) {
+Array<T>::Array(Array&& other) noexcept : current_size(other.current_size), current_capacity(other.current_capacity), elements(std::move(other.elements)) {
     other.current_size = 0;
     other.current_capacity = 0;
-    other.elements = std::make_shared<T[]>(1);
+    other.elements = std::shared_ptr<T[]>(new T[1], array_deleter);
 }
 
 template<class T>
@@ -40,14 +38,14 @@ Array<T>& Array<T>::operator=(Array&& other) noexcept {
         
         other.current_size = 0;
         other.current_capacity = 0;
-        other.elements = std::make_shared<T[]>(1);
+        other.elements = std::shared_ptr<T[]>(new T[1], array_deleter);
     }
     return *this;
 }
 
 template<class T>
 void Array<T>::resize(size_t new_capacity) {
-    auto new_elements = std::make_shared<T[]>(new_capacity);
+    auto new_elements = std::shared_ptr<T[]>(new T[new_capacity], array_deleter);
     for (size_t i = 0; i < current_size && i < new_capacity; ++i) {
         new_elements[i] = std::move(elements[i]);
     }
