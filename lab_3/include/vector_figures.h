@@ -1,5 +1,4 @@
-#ifndef VECTOR_FIGURES_H
-#define VECTOR_FIGURES_H
+#pragma once
 
 #include "figures.h"
 
@@ -25,7 +24,8 @@ public:
   void clear();
   void erase(size_t index);
 
-  Figure *get(size_t index);
+  Figure *operator[](size_t index);
+  const Figure *operator[](size_t index) const;
 
   size_t len();
 
