@@ -1,5 +1,4 @@
-#ifndef VECTOR_POINTS_H
-#define VECTOR_POINTS_H
+#pragma once
 
 #include "point.h"
 
@@ -8,6 +7,7 @@ private:
   size_t size;
   size_t capacity;
   Point *v;
+  void resize(size_t new_capacity);
 
 public:
   VectorPoints();
@@ -16,14 +16,19 @@ public:
   VectorPoints(VectorPoints &&other) noexcept;
   ~VectorPoints();
 
+  VectorPoints &operator=(const VectorPoints &other);
+  VectorPoints &operator=(VectorPoints &&other) noexcept;
+
   void push(Point c);
   void pop();
   void clear();
   void set(size_t i, Point p);
   void resize(size_t newsize);
+ 
+  Point &operator[](size_t index);
+  const Point &operator[](size_t index) const;
 
-  Point get(size_t i) const;
-  size_t len() const;
+   size_t len() const;
 };
 
 #endif
