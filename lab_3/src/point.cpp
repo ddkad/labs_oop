@@ -1,5 +1,6 @@
-#include "point.h"
 #include <iostream>
+
+#include "point.h"
 
 Point::Point() : x(0), y(0) {}
 
