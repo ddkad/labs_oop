@@ -1,9 +1,10 @@
+#include <iostream>
+
 #include "figures.h"
 #include "rectangle.h"
 #include "square.h"
 #include "trapezoid.h"
 #include "vector_figures.h"
-#include <iostream>
 
 int main() {
   VectorFigure v;
@@ -36,7 +37,7 @@ int main() {
 
   std::cout << "\nInformation about figures:\n";
   for (size_t i = 0; i < v.len(); ++i) {
-    Figure *fig = v.get(i);
+    Figure *fig = v[i];
     Point center = fig->Center();
     std::cout << "Figure " << i << ": ";
     std::cout << "Center" << center << " ";
@@ -51,8 +52,10 @@ int main() {
 
   std::cout << "Remaining figures: " << v.len() << std::endl;
   for (size_t i = 0; i < v.len(); ++i) {
-    std::cout << v.get(i)->Area() << std::endl;
+    std::cout << v[i]->Area() << std::endl;
   }
+
+  v.clear();
 
   return 0;
 }
