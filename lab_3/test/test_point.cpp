@@ -1,5 +1,6 @@
-#include "point.h"
 #include <gtest/gtest.h>
+
+#include "point.h"
 
 TEST(PointTest, DefaultConstructor) {
   Point p;
