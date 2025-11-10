@@ -58,9 +58,7 @@ void VectorFigure::erase(size_t ind) {
   }
 }
 
-Figure *VectorFigure::get(size_t i) { return v[i]; }
-
-size_t VectorFigure::len() { return size; }
+size_t VectorFigure::len() const { return size; }
 
 void VectorFigure::clear() {
   for (size_t i = 0; i < size; ++i) {
@@ -70,4 +68,20 @@ void VectorFigure::clear() {
   capacity = 1;
   delete[] v;
   v = new Figure *[capacity];
+}
+
+Figure* VectorFigure::operator[](size_t index) {
+    return v[index];
+}
+
+const Figure* VectorFigure::operator[](size_t index) const {
+    return v[index];
+}
+
+double VectorFigure::totalArea() const {
+    double total = 0.0;
+    for (size_t i = 0; i < size; ++i) {
+        total += v[i]->Area();
+    }
+    return total;
 }
