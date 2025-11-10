@@ -1,9 +1,10 @@
+#include <gtest/gtest.h>
+
 #include "point.h"
 #include "rectangle.h"
 #include "square.h"
 #include "vector_figures.h"
 #include "vector_points.h"
-#include <gtest/gtest.h>
 
 TEST(VectorPointsTest, AddAndGetPoints) {
   VectorPoints vp;
@@ -12,8 +13,8 @@ TEST(VectorPointsTest, AddAndGetPoints) {
   vp.push(p1);
   vp.push(p2);
   EXPECT_EQ(vp.len(), 2);
-  EXPECT_TRUE(vp.get(0) == p1);
-  EXPECT_TRUE(vp.get(1) == p2);
+  EXPECT_TRUE(vp[0]) == p1);
+  EXPECT_TRUE(vp[1] == p2);
 }
 
 TEST(VectorFigureTest, AddFigures) {
@@ -23,4 +24,6 @@ TEST(VectorFigureTest, AddFigures) {
   vf.push(square);
   vf.push(rectangle);
   EXPECT_EQ(vf.len(), 2);
+  EXPECT_TRUE(vf[0] == square);   
+  EXPECT_TRUE(vf[1] == rectangle);
 }
