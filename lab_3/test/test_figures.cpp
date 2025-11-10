@@ -1,8 +1,9 @@
+#include <gtest/gtest.h>
+
 #include "point.h"
 #include "rectangle.h"
 #include "square.h"
 #include "trapezoid.h"
-#include <gtest/gtest.h>
 
 TEST(SquareTest, AreaCalculation) {
   Point p1(0, 0);
