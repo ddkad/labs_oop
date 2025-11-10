@@ -1,8 +1,9 @@
-#ifndef FIGURE_H
-#define FIGURE_H
+#pragma once
+
+#include <iostream>
 
 #include "vector_points.h"
-#include <iostream>
+
 
 class Figure {
 public:
@@ -29,5 +30,3 @@ protected:
 
 std::istream &operator>>(std::istream &is, Figure &figure);
 std::ostream &operator<<(std::ostream &os, const Figure &figure);
-
-#endif
