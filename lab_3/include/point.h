@@ -8,8 +8,8 @@ struct Point {
   Point();
   Point(double x, double y);
 
-  bool operator==(const Point &other) const;
-  bool operator!=(const Point &other) const;
+  friend bool operator==(const Point &p1, const Point &p2);
+  friend bool operator!=(const Point &p1, const Point &p2);
 
   friend std::istream &operator>>(std::istream &is, Point &p);
   friend std::ostream &operator<<(std::ostream &os, const Point &p);
