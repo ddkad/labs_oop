@@ -16,15 +16,17 @@ void *DynamicMemoryResource::do_allocate(std::size_t size,
     throw std::bad_alloc();
   }
 
-  auto it = std::find_if(deallocated_blocks_.begin(), deallocated_blocks_.end(),
+  auto iterator = std::find_if(deallocated_blocks_.begin(), deallocated_blocks_.end(),
         [size, alignment](const MemoryBlock& block) {
-            return block.size >= size && block.alignment >= alignment;
+            return block.size >= size && 
+                   block.alignment == alignment &&
+                   (reinterpret_cast<uintptr_t>(block.pointer) % alignment == 0);
         });
     
-    if (it != deallocated_blocks_.end()) {
-        void* ptr = it->pointer;
-        allocated_blocks_.push_back(*it);
-        deallocated_blocks_.erase(it);
+    if (iterator != deallocated_blocks_.end()) {
+        void* ptr = iterator->pointer;
+        allocated_blocks_.push_back(*iterator);
+        deallocated_blocks_.erase(iterator);
         return ptr;
     }
 
@@ -35,8 +37,17 @@ void *DynamicMemoryResource::do_allocate(std::size_t size,
 
 void DynamicMemoryResource::do_deallocate(void *pointer, std::size_t size,
                                           std::size_t alignment) {
-  (void)size;
-  (void)alignment;
+  for (auto iterator = allocated_blocks_.begin();
+       iterator != allocated_blocks_.end(); ++iterator) {
+    if (iterator->pointer == pointer && 
+        iterator->size == size && 
+        iterator->alignment == alignment) {
+      deallocated_blocks_.push_back(*iterator);
+      allocated_blocks_.erase(iterator);
+      return;
+    }
+  }
+
   for (auto iterator = allocated_blocks_.begin();
        iterator != allocated_blocks_.end(); ++iterator) {
     if (iterator->pointer == pointer) {
