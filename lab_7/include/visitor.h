@@ -1,18 +1,28 @@
-#ifndef VISITOR_H
-#define VISITOR_H
+#pragma once
 
-#include <memory>
+#include "defs.h"
+
 
 class Dragon;
+class Toad;
 class Bull;
-class Frog;
 
-class Visitor {
+class NPCVisitor {
 public:
-    virtual ~Visitor() = default;
     virtual void visit(Dragon& dragon) = 0;
+    virtual void visit(Toad& toad) = 0;
     virtual void visit(Bull& bull) = 0;
-    virtual void visit(Frog& frog) = 0;
 };
 
-#endif 
+
+class FightVisitor : public NPCVisitor {
+    NpcType attacker_type;
+    bool fight_possible;
+public:
+    FightVisitor(NpcType attacker);
+    bool can_fight() const { return fight_possible; }
+
+    void visit(Dragon& dragon) override;
+    void visit(Toad& toad) override;
+    void visit(Bull& bull) override;
+};

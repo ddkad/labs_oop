@@ -1,87 +1,97 @@
-#include "../include/npc_factory.h"
-#include "../include/observer.h"
-#include "../include/game_world.h"
-#include "../include/fight_manager.h"
 #include <iostream>
-#include <thread>
+#include <thread> 
 #include <chrono>
 #include <vector>
-#include <memory>
+#include <string>
 #include <atomic>
-#include <mutex>
-#include <random>
+#include <exception>
 
-std::mutex print_mutex;
-std::atomic<bool> gameRunning{true};
+#include "defs.h"
+#include "factory.h"
+#include "map.h"
+#include "battle.h"
+#include "movement.h"
+#include "observer.h"
 
-void movementThread(GameWorld& world) {
-    while (gameRunning) {
-        world.moveNPCs();
-        world.detectBattles();
-        world.removeDeadNPCs();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+void print_map_state() {
+    auto npcs = GameMap::get().get_snapshot();
+
+    std::vector<std::string> grid(MAP_HEIGHT, std::string(MAP_WIDTH, '.'));
+
+    for (const auto& npc : npcs) {
+        auto pos = npc->get_position();
+        int x = pos.first;
+        int y = pos.second;
+        
+        if (npc->is_alive()) {
+            if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT) {
+                char symbol = '?';
+                switch (npc->get_type()) {
+                    case NpcType::Dragon: symbol = 'D'; break; 
+                    case NpcType::Bull:   symbol = 'B'; break; 
+                    case NpcType::Toad:   symbol = 'T'; break; 
+                }
+                grid[y][x] = symbol;
+            }
+        }
     }
-}
 
-void fightThread() {
-    FightManager::get().processEvents();
-}
-
-void displayThread(GameWorld& world) {
-    while (gameRunning) {
-        world.printMap();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::string buffer;
+    buffer.reserve((MAP_WIDTH + 1) * MAP_HEIGHT + 100);
+    buffer += "\nSTART\n";
+    for (const auto& row : grid) {
+        buffer += row;
+        buffer += '\n';
     }
+    buffer += "END\n";
+    std::cout << buffer << std::flush;
 }
 
 int main() {
-    const int MAX_X = 100;
-    const int MAX_Y = 100;
-    const int TOTAL_NPCS = 50;
-    const int GAME_DURATION = 30; 
-    
-    std::cout << "NPC battle simulation\n";
-    std::cout << "Creating " << TOTAL_NPCS << " NPCs...\n";
-    
-    GameWorld world(MAX_X, MAX_Y);
-    auto textObserver = std::make_shared<TextObserver>();
-    
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    
-    for (int i = 0; i < TOTAL_NPCS; ++i) {
-        std::string name = "NPC_" + std::to_string(i);
-        std::uniform_int_distribution<> typeDist(0, 2);
-        NpcType type = static_cast<NpcType>(typeDist(gen));
+    try {
+        std::srand(std::time(nullptr));
+
+        std::cout << "Generating NPCs..." << std::endl;
+        for (int i = 0; i < NPC_COUNT; ++i) {
+            NpcType t = static_cast<NpcType>(std::rand() % 3);
+            GameMap::get().add_npc(NpcFactory::create_npc(t, std::rand() % MAP_WIDTH, std::rand() % MAP_HEIGHT));
+        }
+
+        BattleManager battle_mgr;
+        battle_mgr.add_observer(std::make_shared<ConsoleObserver>());
+        battle_mgr.add_observer(std::make_shared<FileObserver>());
+
+        std::atomic<bool> game_running{true};
+
+        std::jthread move_thread(movement_thread_func, std::ref(battle_mgr), std::ref(game_running));
+
+        auto start_time = std::chrono::steady_clock::now();
         
-        std::uniform_int_distribution<> coordDist(0, MAX_X);
-        int x = coordDist(gen);
-        int y = coordDist(gen);
+        while (true) {
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count() >= GAME_DURATION_SEC) {
+                break;
+            }
+            print_map_state();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+
+        game_running = false;
+
         
-        auto npc = NPCFactory::createNPC(type, name, x, y);
-        npc->addObserver(textObserver);
-        world.addNPC(npc);
+        battle_mgr.stop();
+
+        std::cout << "\nGAME OVER\nSaving survivors...\n";
+        GameMap::get().save("map_dump.txt");
+
+    } catch (const std::exception& e) {
+        std::cerr << "CRITICAL ERROR: " << e.what() << std::endl;
+        return 1;
+    } catch (...) {
+        std::cerr << "UNKNOWN ERROR" << std::endl;
+        return 1;
     }
-    
-    std::cout << "Game started! Running for " << GAME_DURATION << " seconds...\n";
-    
-    std::thread movement(movementThread, std::ref(world));
-    std::thread fight(fightThread);
-    std::thread display(displayThread, std::ref(world));
-    
-    std::this_thread::sleep_for(std::chrono::seconds(GAME_DURATION));
-    
-    gameRunning = false;
-    FightManager::get().stop();
 
-    movement.join();
-    fight.join();
-    display.join();
-
-    world.printSurvivors();
-    
-    std::cout << "\nGame over\n";
-    std::cout << "Total battles processed: " << FightManager::get().getQueueSize() << "\n";
-    
     return 0;
 }

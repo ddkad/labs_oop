@@ -1,54 +1,37 @@
-cmake_minimum_required(VERSION 3.15)
-project(Lab7)
+cmake_minimum_required(VERSION 3.16)
+project(BalagurFate3)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(Threads REQUIRED)
 
-if(WIN32)
-    if(MSVC)
-        add_compile_options(/std:c++latest)
-        add_compile_options(/await)
-    endif()
-endif()
+include_directories(include)
 
 
-if(UNIX)
-    add_compile_options(-fcoroutines)
-endif()
-
-
-set(SOURCES
+add_executable(game 
     src/main.cpp
     src/npc.cpp
-    src/npc_factory.cpp
-    src/visitor.cpp
+    src/entities.cpp
+    src/factory.cpp
+    src/map.cpp
+    src/battle.cpp
+    src/movement.cpp
     src/observer.cpp
-    src/fight_manager.cpp
-    src/game_world.cpp
-    src/coroutine_npc.cpp  
-)
+    src/visitor.cpp
+    
 
-
-set(HEADERS
+    include/defs.h
     include/npc.h
-    include/npc_factory.h
+    include/entities.h
+    include/factory.h
+    include/map.h
+    include/battle.h
+    include/movement.h
     include/observer.h
-    include/fight_manager.h
-    include/game_world.h
-    include/coroutine_npc.h  
     include/visitor.h
+    include/coro.h
 )
 
-add_executable(lab7 ${SOURCES} ${HEADERS})
 
-
-if(WIN32)
-    target_compile_options(lab7 PRIVATE /EHsc)
-endif()
-
-
-if(UNIX AND NOT APPLE)
-    target_compile_options(lab7 PRIVATE -pthread)
-    target_link_libraries(lab7 pthread)
-endif()
+target_link_libraries(game PRIVATE Threads::Threads)

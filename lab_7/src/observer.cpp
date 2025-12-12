@@ -1,17 +1,31 @@
-#include "../include/observer.h"
-#include "../include/npc.h"
+#include "observer.h"
+#include "npc.h"
+#include "defs.h"
+
 #include <iostream>
+#include <format>
+#include <mutex>
 
-extern std::mutex print_mutex;
-
-void TextObserver::onFight(const std::shared_ptr<NPC> attacker, 
-                          const std::shared_ptr<NPC> defender, 
-                          bool win) {
-    std::lock_guard<std::mutex> lock(print_mutex);
-    
+void ConsoleObserver::on_fight(const std::shared_ptr<NPC> attacker, const std::shared_ptr<NPC> defender, bool win) {
+    std::lock_guard<std::mutex> lock(mtx);
     if (win) {
-        std::cout << attacker->getName() << " killed " << defender->getName() << std::endl;
-    } else {
-        std::cout << attacker->getName() << " failed to kill " << defender->getName() << std::endl;
+        std::cout << std::format("\n[KILL] {} ({}) killed {} ({})", 
+            attacker->get_name(), type_to_string(attacker->get_type()), 
+            defender->get_name(), type_to_string(defender->get_type())) << std::endl;
+    } 
+}
+
+FileObserver::FileObserver() {
+    file.open("log.txt");
+}
+
+FileObserver::~FileObserver() {
+    if (file.is_open()) file.close();
+}
+
+void FileObserver::on_fight(const std::shared_ptr<NPC> attacker, const std::shared_ptr<NPC> defender, bool win) {
+    std::lock_guard<std::mutex> lock(mtx);
+    if (win) {
+        file << std::format("{} killed {}\n", attacker->get_name(), defender->get_name());
     }
 }
